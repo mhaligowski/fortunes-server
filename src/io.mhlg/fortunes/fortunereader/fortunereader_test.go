@@ -10,6 +10,7 @@ func TestFortunes(t *testing.T) {
         input string
         expected []string
     } {
+        { "", []string{} },
         { "fortune", []string{"fortune"} },
         { "fortune\n", []string{"fortune\n"} },
         { "fortune\n%\n", []string{"fortune\n"} },
