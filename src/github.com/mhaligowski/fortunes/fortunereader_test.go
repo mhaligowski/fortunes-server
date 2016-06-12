@@ -1,4 +1,4 @@
-package fortunereader
+package fortunes
 
 import (
     "testing"
