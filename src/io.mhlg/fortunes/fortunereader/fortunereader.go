@@ -1,28 +1,50 @@
 package fortunereader
 
 import (
-    "strings"
-    "io/ioutil"
+    "bufio"
+    "io"
+    "os"
+    "bytes"
 )
 
-func parseFortunes(input string) []string {
-    splitValues := strings.Split(input, "%\n")
-    if splitValues[len(splitValues)-1] == "" {
-        splitValues = splitValues[:len(splitValues)-1]
+var separator = []byte("\n%\n")
+
+func scanFortunes(data []byte, atEOF bool) (advance int, token []byte, err error) {
+    if atEOF && len(data) == 0 {
+        return 0, nil, nil
     }
 
-    result := make([]string, len(splitValues))
-    for i, v := range splitValues {
-        result[i] = strings.TrimPrefix(v, "\n")
+    if i := bytes.Index(data, separator); i >= 0 {
+        return i + 3, data[0:i], nil
     }
 
-    return splitValues
+    if atEOF {
+        return len(data), data, nil
+    }
+
+    return 0, nil, nil
 }
 
-func ReadFortunes(filename string) []string {
-    file, _ := ioutil.ReadFile(filename)
+func ReadFortunes(r io.Reader) []string {
+    s := bufio.NewScanner(r)
+    s.Split(scanFortunes)
 
-    return parseFortunes(string(file))
+    a := make([]string, 0)
+    for s.Scan() {
+        currentText := s.Text()
+        a = append(a, currentText)
+    }
+
+    return a
 }
 
+func ReadFortunesFromFile(filename string) []string {
+    file, err := os.Open(filename)
+
+    if err != nil {
+        panic(err)
+    }
+
+    return ReadFortunes(file)
+}
 

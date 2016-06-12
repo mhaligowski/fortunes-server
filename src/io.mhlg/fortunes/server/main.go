@@ -11,7 +11,7 @@ import (
 type handler func(http.ResponseWriter, *http.Request)
 
 func getHandler(filename string) handler {
-    fortunes := fortunereader.ReadFortunes(filename)
+    fortunes := fortunereader.ReadFortunesFromFile(filename)
 
     return func(w http.ResponseWriter, r *http.Request) {
         fortuneNumber := rand.Intn(len(fortunes))
@@ -20,7 +20,7 @@ func getHandler(filename string) handler {
 }
 
 func main() {
-    fortunesFile := os.Args[1] 
+    fortunesFile := os.Args[1]
     http.HandleFunc("/", getHandler(fortunesFile))
     http.ListenAndServe(":8080", nil)
 }
